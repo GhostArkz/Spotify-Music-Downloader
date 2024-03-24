@@ -1,17 +1,32 @@
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 
-CLIENT_ID="325bc3e94f254412bd70845484e833bc"
-CLIENT_SECRET="2a7f2ec13d6e4722bfef01313f87e705"
+CLIENT_ID = "42f4851156894fd6b25c9118816ad740"
+CLIENT_SECRET = "14f28b59723c4eebab2e8fd28cf28533"
+REDIRECT_URI = "http://localhost:8888/callback"
 
-birdy_uri = 'spotify:artist:2WX2uTcsvV5OnS0inACecP'
-spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(CLIENT_ID, CLIENT_SECRET))
+spotify = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    redirect_uri=REDIRECT_URI,
+    scope='user-library-read'))
 
-results = spotify.artist_albums(birdy_uri, album_type='album')
-albums = results['items']
-while results['next']:
-    results = spotify.next(results)
-    albums.extend(results['items'])
 
-for album in albums:
-    print(album['name'])
+def get_liked_tracks():
+    liked_tracks = []
+    results = spotify.current_user_saved_tracks()
+    while results:
+        liked_tracks.extend([item['track'] for item in results['items']])
+        if results['next']:
+            results = spotify.next(results)
+        else:
+            break
+    return liked_tracks
+
+
+try:
+    tracks = get_liked_tracks()
+    for track in tracks:
+        print(track['name'], '-', track['artists'][0]['name'])
+except Exception as e:
+    print(f"An error occurred: {e}")
