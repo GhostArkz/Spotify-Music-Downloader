@@ -1,6 +1,10 @@
 import spotipy
+import pytube
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
+from pytube import YouTube
+from pytube import Search
 
+#SAVE_PATH = "C:\Users\Sonny\Downloads"
 CLIENT_ID = "42f4851156894fd6b25c9118816ad740"
 CLIENT_SECRET = "14f28b59723c4eebab2e8fd28cf28533"
 REDIRECT_URI = "http://localhost:8888/callback"
@@ -24,9 +28,22 @@ def get_liked_tracks():
     return liked_tracks
 
 
-try:
-    tracks = get_liked_tracks()
-    for track in tracks:
-        print(track['name'], '-', track['artists'][0]['name'])
-except Exception as e:
-    print(f"An error occurred: {e}")
+#def search_liked_tracks():
+
+
+
+
+
+
+tracks = get_liked_tracks()
+for current_track in tracks:
+    s = Search(current_track['name'])
+    v = s.results[0]
+    print(f"{v.title}\n{v.watch_url}\n")
+
+    """try:
+        tracks = get_liked_tracks()
+        for track in tracks:
+            print(track['name'], '-', track['artists'][0]['name'])
+    except Exception as e:
+        print(f"An error occurred: {e}")"""
